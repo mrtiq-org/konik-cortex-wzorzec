@@ -1,0 +1,11 @@
+{
+  "name": "konik-mcp",
+  "version": "0.1.0",
+  "description": "Serwer MCP: Claude klienta widzi swój portal KONIK (read-only v1)",
+  "type": "module",
+  "bin": { "konik-mcp": "index.js" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
+  }
+}

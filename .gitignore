@@ -1,0 +1,12 @@
+# Zaleznosci serwera MCP ciagniemy na maszynie klienta (instalator robi to sam),
+# a nie wozimy w repo — 93 pakiety w historii to nie jest wzorzec vaulta.
+node_modules/
+
+# Konfiguracja Claude Desktop klienta ZAWIERA TOKEN dostepu do jego konta.
+# Gdyby ktos skopiowal ja do repo w trakcie wdrozenia — nie ma szans wyjechac.
+claude_desktop_config.json
+*.bak-*
+
+# Systemowe smieci maca i Obsidiana
+.DS_Store
+.obsidian/workspace*.json
