@@ -60,17 +60,30 @@ Serwer MCP daje Claude'owi klienta **odczyt jego portalu**: co czeka na
 akceptację, kalendarz publikacji, dokumenty marki, stan wdrożenia Drugiego
 Mózgu. Nic nie zapisuje — akceptacje zostają w portalu.
 
-Potrzebne dwie wartości z zalogowanej sesji klienta w portalu:
+Potrzebne dwie wartości:
 
-- `KONIK_CLIENT_ID` — identyfikator konta (`user.id` z sesji)
-- `KONIK_TOKEN` — token dostępu (`access_token` z sesji)
+- `KONIK_CLIENT_ID` — UUID konta klienta w KONIKU
+- `KONIK_TOKEN` — **poświadczenie agentowe** `konik_agt_…`
 
-**Panel ich dziś NIE pokazuje.** Trzeba je wyjąć z narzędzi deweloperskich
-przeglądarki: zalogowany portal → *Application* → *Local Storage* → wpis
-`sb-…-auth-token` → w JSON-ie `access_token` i `user.id`.
+Poświadczenie wydajesz sobie sam, ze swojego konta menadżera:
 
-Instalator wpisze je do konfiguracji Claude Desktop. Jeśli robisz to później,
-ręcznie:
+> **Konsola menadżera → zakładka MCP → Wydaj poświadczenie**
+> - *Klienci w zakresie*: TYLKO ten jeden klient
+> - *Tryb*: **read** — Claude klienta ma czytać jego portal, nie zmieniać konta
+> - *Ważność*: do 90 dni
+> - *Etykieta*: np. „MacBook Anny, Cemet"
+
+Sekret pokazuje się **raz**. Backend rozpoznaje go po prefiksie `konik_agt_`
+i idzie ścieżką agentową zamiast sesyjnego JWT — `konik-mcp` przyjmuje go
+jako `KONIK_TOKEN` bez żadnej zmiany.
+
+Czego to poświadczenie NIE jest: nie jest kluczem klienta. Właścicielem jesteś
+Ty, więc przestaje działać, gdy Twoje konto w zespole KONIK zostanie wyłączone.
+Wygasa najpóźniej po 90 dniach — odnowienie wpada w rytm przeglądu.
+Unieważnisz je w tej samej zakładce, natychmiast, bez ruszania maszyny klienta.
+
+Instalator wpisze obie wartości do konfiguracji Claude Desktop. Jeśli robisz to
+później, ręcznie:
 
 ```bash
 node ~/konik-wzorzec/narzedzia/rejestruj-mcp.js \
@@ -83,23 +96,26 @@ node ~/konik-wzorzec/narzedzia/rejestruj-mcp.js \
 Skrypt **scala** konfigurację — inne serwery MCP klienta zostają nietknięte,
 a plik dostaje kopię zapasową z datą.
 
-### ⚠️ To połączenie jest dziś DEMONSTRACYJNE
+### Czego NIE wklejać
 
-`access_token` z portalu to token sesji przeglądarki. W standardowej
-konfiguracji Supabase żyje **około godziny**, a odświeża go wyłącznie
-przeglądarka — serwer MCP nie ma jak go odnowić.
+Tokenu sesji z portalu (`access_token` z Local Storage przeglądarki). Żyje
+około godziny i odświeża go wyłącznie przeglądarka — serwer MCP nie ma jak go
+odnowić, więc połączenie umrze tego samego dnia. Do vaulta idzie wyłącznie
+poświadczenie `konik_agt_…`.
 
-Praktycznie: połączenie działa na warsztacie i na pokazie, a po godzinie
-narzędzia zaczynają zwracać „Sesja KONIK wygasła — zaloguj się w portalu
-i zaktualizuj KONIK_TOKEN". Komunikat jest czytelny (nie ciche pustki), ale
-klient nie będzie codziennie kopiował tokenu z devtoolsów.
+### Czego NIE mylić z tym serwerem
 
-**Do trwałego wdrożenia potrzebny jest długowieczny klucz per klient wydawany
-z panelu — to otwarta decyzja 6 z CORTEX-PLAN.md, nie jest zbudowana.**
+Modal po wydaniu poświadczenia podpowiada komendę
+`claude mcp add … https://mcp.koniksystems.com/mcp`. To **inny serwer**:
+proxy dla zespołu KONIK (strategia, dokumenty marki, korekty), używane przez
+opiekuna w jego własnym Claude. Klient dostaje lokalny `konik-mcp` po stdio,
+z pięcioma narzędziami tylko do odczytu jego portalu.
 
-Dlatego przy wdrożeniu, w którym połączenie z portalem ma po prostu działać:
-zainstaluj sam vault (`KONIK_SKIP_MCP=1`), a MCP dołóż, gdy klucz będzie
-gotowy. Vault, Obsidian i Claude na procedurach działają bez tego w pełni.
+### Gdy klienta nie ma jeszcze w portalu
+
+Zainstaluj sam vault: `KONIK_SKIP_MCP=1 ./instalator/instaluj.sh …`.
+Obsidian i Claude na procedurach działają w pełni bez połączenia — MCP
+dołożysz jednym uruchomieniem `rejestruj-mcp.js`, gdy konto powstanie.
 
 ---
 
@@ -114,6 +130,27 @@ gotowy. Vault, Obsidian i Claude na procedurach działają bez tego w pełni.
 
 Punkt 4 pokaż klientowi. To jest moment, w którym rozumie, czym jest kontrakt
 danych — lepiej niż jakikolwiek slajd.
+
+---
+
+---
+
+## 4a. Strona KONIKA — wdrożenie musi istnieć w panelu
+
+Sam vault to połowa produktu. Druga połowa to wdrożenie prowadzone w portalu,
+które klient WIDZI u siebie:
+
+1. Zaloguj się jako menadżer → przełącznik kont w bocznym pasku → **wejdź na
+   konto klienta** (klient musi mieć konto w portalu KONIK)
+2. Panel Klienta → **Drugi Mózg** → uruchom wdrożenie → ścieżka **LOCAL**
+   (vault na MacBooku klienta = dane nie opuszczają jego biura)
+3. Wpisz **kuratora wiedzy** (imię + rola) i **datę przeglądu po 30 dniach**
+4. Wpisz **wersje komponentów** — Obsidian i Claude Desktop z tej maszyny
+5. Odhaczaj etapy w miarę postępu. Odbiór systemu jest **zablokowany**, dopóki
+   checklista nie ma 14/14 — to bramka po stronie serwera, nie ozdoba
+
+Klient widzi wszystkie 9 etapów i checklistę na swoim koncie. Przejrzystość
+procesu jest częścią produktu — nie ma tu trybu „pokażemy na końcu".
 
 ---
 
