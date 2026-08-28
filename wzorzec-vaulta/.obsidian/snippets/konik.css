@@ -1,0 +1,86 @@
+/* ============================================
+ * KONIK Cortex — motyw vaulta klienta.
+ *
+ * To jest SNIPPET CSS Obsidiana, czyli zwykła konfiguracja użytkownika —
+ * nie modyfikacja aplikacji. Vault otwiera się w kolorach KONIK-a, a sam
+ * Obsidian pozostaje Obsidianem: jego ikona, nazwa i splash są jego.
+ * Przerabianie aplikacji byłoby repackagingiem i tego świadomie nie robimy.
+ *
+ * Paleta 1:1 z portalem (dashboard/src/index.css):
+ *   Cyber Teal   #18B2A6 — akcent, linki, aktywne elementy
+ *   Neon Magenta #F229AF — rzadko, tylko tam gdzie trzeba podjąć decyzję
+ *   Deep Void    #111111 — typografia
+ *   Pure White   #FFFFFF — tło
+ *
+ * Magenta celowo NIE jest tu użyta na elementach nawigacji. W portalu
+ * oznacza „musisz podjąć decyzję" — gdyby świeciła na każdym folderze,
+ * przestałaby cokolwiek znaczyć.
+ * ============================================ */
+
+.theme-light {
+  --color-accent: #18b2a6;
+  --color-accent-1: #14a094;
+  --color-accent-2: #0f8a80;
+
+  --interactive-accent: #18b2a6;
+  --interactive-accent-hover: #14a094;
+
+  --background-primary: #ffffff;
+  --background-primary-alt: #fafafa;
+  --background-secondary: #f4f4f5;
+  --background-secondary-alt: #e8e8ea;
+
+  --text-normal: #111111;
+  --text-muted: #6b6b6b;
+  --text-faint: #9a9a9a;
+  --text-accent: #18b2a6;
+  --text-accent-hover: #0f8a80;
+
+  --divider-color: #d4d4d8;
+  --background-modifier-border: #d4d4d8;
+
+  --h1-color: #111111;
+  --h2-color: #111111;
+  --h3-color: #18b2a6;
+}
+
+.theme-dark {
+  --color-accent: #18b2a6;
+  --interactive-accent: #18b2a6;
+  --interactive-accent-hover: #14a094;
+  --text-accent: #18b2a6;
+  --text-accent-hover: #4fd6cb;
+}
+
+/* Tytuł notatki — jedyne miejsce, gdzie pozwalamy sobie na wyraźny akcent. */
+.inline-title {
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  border-bottom: 2px solid #18b2a6;
+  padding-bottom: 0.25em;
+}
+
+/* Nagłówek panelu bocznego: podpis systemu zamiast pustej belki. */
+.workspace-tab-header-container::after {
+  content: "KONIK · Drugi Mózg";
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+  padding: 0 10px;
+  align-self: center;
+  white-space: nowrap;
+}
+
+/* Zadania odhaczone — wyciszamy, żeby lista pokazywała to, co zostało. */
+.markdown-preview-view ul > li.task-list-item[data-task="x"] {
+  color: #9a9a9a;
+  text-decoration: line-through;
+}
+
+/* Cytat blokowy = w naszych szablonach „uwaga kuratora". */
+.markdown-preview-view blockquote {
+  border-left: 3px solid #18b2a6;
+  background: #fafafa;
+  color: #3a3a3a;
+}

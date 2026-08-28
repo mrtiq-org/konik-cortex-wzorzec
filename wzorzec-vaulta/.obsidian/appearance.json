@@ -1,0 +1,10 @@
+{
+  "accentColor": "#18B2A6",
+  "theme": "moonstone",
+  "cssTheme": "",
+  "enabledCssSnippets": [
+    "konik"
+  ],
+  "baseFontSize": 16,
+  "showInlineTitle": true
+}
