@@ -47,6 +47,10 @@ bledy=()
 pakiety=(
   "formula|Node.js|node"
   "formula|git|git"
+  # Bez tego git na Macu przy pushu po HTTPS pyta o haslo i odrzuca haslo do
+  # GitHuba (wymaga tokenu). Z menedzerem otwiera okno logowania w przegladarce,
+  # tak samo jak Git for Windows — jedna instrukcja dla obu systemow.
+  "cask|Git Credential Manager|git-credential-manager"
   "cask|Obsidian|obsidian"
   "cask|Claude Desktop|claude"
 )
@@ -84,6 +88,7 @@ wersja_app() {
   local plist="/Applications/$1.app/Contents/Info.plist"
   [ -f "$plist" ] && /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist" 2>/dev/null
 }
+command -v git-credential-manager >/dev/null 2>&1 && echo "  git-credential-manager  $(git-credential-manager --version 2>/dev/null | head -1)" || { echo "  git-credential-manager  BRAK — push po HTTPS bedzie pytal o token"; bledy+=("git-credential-manager"); }
 for app in Obsidian Claude; do
   w="$(wersja_app "$app")"
   if [ -n "$w" ]; then echo "  $app  $w"; else echo "  $app  nie znaleziono w /Applications"; bledy+=("$app nie widoczny"); fi
