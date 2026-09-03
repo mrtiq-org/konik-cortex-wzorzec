@@ -34,6 +34,20 @@ Kontakt do człowieka trzymamy w CRM i wpisujemy tu tylko `crm_id`.
 System sam pilnuje tej zasady (kontrola przy każdym zapisie) — ale to Ty
 odpowiadasz za to, co wklejasz.
 
+## Praca w zespole — jedna pamięć, nie trzy
+
+Baza jest wspólna: każda osoba ma kopię na swoim komputerze, a łączy je
+repozytorium git. Trzy nawyki, bez których kopie się rozjadą:
+
+1. **Rano `pull`** — zanim zaczniesz, ściągasz to, co dopisali inni.
+2. **Po sesji `commit` + `push`** — to, co dopisałeś z asystentem, idzie do
+   zespołu tego samego dnia. Notatka tylko u Ciebie = notatka, której nie ma.
+3. **Konflikt na tym samym pliku rozstrzyga Kurator Wiedzy.** Nie nadpisuj
+   cudzej wersji, zgłoś, kurator scala.
+
+Kontrola danych osobowych działa przy każdym `commit` na każdym komputerze —
+wpis z PESEL-em czy prywatnym telefonem nie wyjdzie z Twojej maszyny.
+
 ## Kto opiekuje się bazą
 
 Kurator Wiedzy: **{{KURATOR}}**. Do niego zgłaszasz nieaktualne procedury

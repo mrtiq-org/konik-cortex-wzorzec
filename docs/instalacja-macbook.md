@@ -17,6 +17,20 @@ Na MacBooku klienta muszą być:
 | Obsidian | obsidian.md | uruchamia się |
 | Claude Desktop | claude.ai/download | klient jest **zalogowany na swoje konto** |
 
+Cztery pierwsze pozycje stawia jeden skrypt (Homebrew na Macu, winget na
+Windowsie); zainstalowane pomija, na końcu wypisuje wersje do wpisania w portalu:
+
+```bash
+./instalator/przygotuj-maszyne.sh        # macOS
+.\instalator\przygotuj-maszyne.ps1       # Windows (PowerShell)
+```
+
+Wymaga zainstalowanego Homebrew (Mac) albo wbudowanego winget (Windows 10/11).
+Logowania do Claude Desktop, limitu wydatków i otwarcia vaulta w Obsidianie
+skrypt nie zrobi — to zostaje człowiekowi i skrypt mówi o tym na końcu.
+Na Windowsie po skrypcie otwórz **nowe** okno PowerShell: świeży node/git nie
+jest w PATH bieżącej sesji.
+
 Konto AI klienta musi mieć **ustawiony limit wydatków i alert** — to punkt
 z checklisty odbioru, robimy go PRZED pierwszym użyciem, nie po.
 
@@ -39,6 +53,37 @@ w `~/.konik/konik-mcp` i wpina go do Claude Desktop.
 Na końcu zapyta o **ID konta** i **token** klienta (skąd — punkt 3). Możesz
 wcisnąć Enter i uzupełnić później: instalator powie wtedy wprost, że
 połączenia z portalem jeszcze nie ma, i skończy się kodem 3 zamiast „Gotowe".
+
+### 1a. Kilka osób w firmie — jeden wspólny vault
+
+Zespół = **jedno repo git, klon na każdej maszynie**. Nie uruchamiaj
+`instaluj.sh` trzy razy — powstałyby trzy osobne vaulty o tej samej nazwie.
+
+1. Załóż **puste, prywatne** repo (konto klienta na GitHub/GitLab albo nasz
+   GitLab z umową powierzenia) i dodaj wszystkie osoby jako współpracowników.
+2. **Maszyna kuratora**: instalator z adresem repo — commit startowy idzie od
+   razu tam:
+
+```bash
+KONIK_REMOTE=git@github.com:firma/drugi-mozg.git ./instalator/instaluj.sh "Nazwa Firmy" ~/Drugi-Mozg "Imię Kuratora"
+```
+
+3. **Każda kolejna osoba**: `dolacz.sh` klonuje wspólne repo i dokłada to,
+   czego clone nie przenosi — hook RODO (git nie wersjonuje `.git/hooks`),
+   tożsamość tej osoby w commitach, serwer MCP, wpis w Claude Desktop:
+
+```bash
+./instalator/dolacz.sh git@github.com:firma/drugi-mozg.git ~/Drugi-Mozg "Jan Kowalski"
+```
+
+   Windows: `.\instalator\dolacz.ps1 -Remote … -Cel … -Osoba …`. ID konta
+   i token są **te same** co u kuratora (jedno poświadczenie na wdrożenie).
+   Skrypt odmawia, gdy repo nie jest vaultem KONIK, i sprząta po sobie.
+4. Rytm pracy, który mówisz zespołowi: `git pull` rano, commit + push po
+   sesji w Claude. Konflikt na tym samym pliku rozstrzyga kurator.
+
+Sprawdzone end-to-end na lokalnym repo (2026-09-03): commit z PESEL-em u osoby
+dołączonej jest blokowany, czysta notatka po pushu widoczna u kuratora.
 
 Katalog `~/konik-wzorzec` po instalacji nie jest już potrzebny — serwer MCP
 mieszka osobno w `~/.konik`. Zostaw go jednak, żeby dało się zaktualizować

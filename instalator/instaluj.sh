@@ -13,6 +13,8 @@
 #   KONIK_CLAUDE_CONFIG — plik konfiguracyjny Claude Desktop (gdy nietypowy)
 #   KONIK_MCP_DIR       — gdzie wyladuje serwer MCP (domyslnie ~/.konik/konik-mcp)
 #   KONIK_SKIP_MCP=1    — pomin kroki 5-6 (sam vault, bez polaczenia z KONIKIEM)
+#   KONIK_REMOTE        — adres WSPOLNEGO repo (puste, prywatne): commit startowy
+#                         idzie od razu tam, a kolejne osoby dolaczaja przez dolacz.sh
 #
 # Serwer MCP NIE mieszka w vaulcie: vault jest wersjonowany i skanowany pod
 # katem danych osobowych, a node_modules nie ma tam czego szukac. Stad ~/.konik.
@@ -45,7 +47,9 @@ command -v node >/dev/null || { echo "Brak node — zainstaluj Node.js i uruchom
 echo "[1/6] Kopiuję wzorzec -> $CEL"
 mkdir -p "$CEL"
 cp -R "$WZORZEC/." "$CEL/"
-find "$CEL" -name '.gitkeep' -delete
+# .gitkeep ZOSTAJE: git nie wersjonuje pustych folderów, więc bez niego osoby
+# dołączające przez dolacz.sh dostałyby vault bez 02-SPOTKANIA, 03-KONTA itd.
+# Obsidian ukrywa pliki z kropką, klient ich nie widzi.
 
 echo "[2/6] Podstawiam nazwę firmy, kuratora i datę"
 find "$CEL" -name '*.md' -print0 | while IFS= read -r -d '' f; do
@@ -69,6 +73,14 @@ echo "[4/6] Git + hook pre-commit"
   chmod +x .git/hooks/pre-commit
   git add -A >/dev/null
   git commit -q -m "Start Drugiego Mozgu — $FIRMA ($DATA)"
+  if [ -n "${KONIK_REMOTE:-}" ]; then
+    # Wspólne repo dla zespołu: bez pusha kolejne osoby nie mają skąd klonować.
+    # Push MUSI się udać albo instalator ma stanąć — cichy brak remote'a dałby
+    # trzy osobne vaulty zamiast jednego wspólnego.
+    git remote add origin "$KONIK_REMOTE"
+    git push -q -u origin main || { echo "!! Push do $KONIK_REMOTE nie powiódł się — sprawdź dostęp i uruchom: git -C \"$CEL\" push -u origin main"; exit 1; }
+    echo "      wypchnięto do wspólnego repo: $KONIK_REMOTE"
+  fi
 )
 
 if [ "${KONIK_SKIP_MCP:-}" = "1" ]; then

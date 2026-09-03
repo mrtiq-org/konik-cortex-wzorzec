@@ -19,6 +19,9 @@ param(
   [Parameter(Mandatory = $true)][string]$Cel,
   [Parameter(Mandatory = $true)][string]$Kurator,
   [string]$ClientId = '',
+  # Adres WSPOLNEGO repo (puste, prywatne): commit startowy idzie od razu tam,
+  # a kolejne osoby dolaczaja przez dolacz.ps1.
+  [string]$Remote = '',
   [string]$ApiUrl = 'https://dev.koniksystems.com',
   # Serwer MCP NIE mieszka w vaulcie: vault jest wersjonowany i skanowany pod
   # katem danych osobowych, a node_modules nie ma tam czego szukac.
@@ -35,7 +38,9 @@ if (Test-Path (Join-Path $Cel '00-START')) { throw "Cel juz wyglada na vault: $C
 Write-Host "[1/6] Kopiuje wzorzec -> $Cel"
 New-Item -ItemType Directory -Force $Cel | Out-Null
 Copy-Item -Path (Join-Path $wzorzec '*') -Destination $Cel -Recurse -Force
-Get-ChildItem -Path $Cel -Recurse -Force -Filter '.gitkeep' | Remove-Item -Force
+# .gitkeep ZOSTAJE: git nie wersjonuje pustych folderow, wiec bez niego osoby
+# dolaczajace przez dolacz.ps1 dostalyby vault bez 02-SPOTKANIA, 03-KONTA itd.
+# Obsidian ukrywa pliki z kropka, klient ich nie widzi.
 
 Write-Host "[2/6] Podstawiam nazwe firmy, kuratora i date"
 $data = Get-Date -Format 'yyyy-MM-dd'
@@ -62,6 +67,14 @@ $hook = "#!/bin/sh`nnode .narzedzia/lint-rodo.js . || { echo 'Commit zablokowany
 [System.IO.File]::WriteAllText((Join-Path $Cel '.git\hooks\pre-commit'), $hook, (New-Object System.Text.UTF8Encoding $false))
 git add -A | Out-Null
 git commit -q -m "Start Drugiego Mozgu - $Firma ($data)"
+if ($Remote) {
+  # Push MUSI sie udac albo instalator staje - cichy brak remote'a dalby
+  # trzy osobne vaulty zamiast jednego wspolnego.
+  git remote add origin $Remote
+  git push -q -u origin main
+  if ($LASTEXITCODE -ne 0) { Pop-Location; throw "Push do $Remote nie powiodl sie - sprawdz dostep i uruchom: git -C `"$Cel`" push -u origin main" }
+  Write-Host "      wypchnieto do wspolnego repo: $Remote"
+}
 Pop-Location
 
 if ($SkipMcp) {

@@ -11,7 +11,7 @@ budowa od zera. Plan produktu i decyzje: KONIK CORE →
 | Katalog | Co |
 |---|---|
 | `wzorzec-vaulta/` | Kompletny vault-szablon: foldery 00–99, 5 szablonów, 10 promptów, SOP-01, warstwa `.claude/` (CLAUDE.md, 4 skille, output-style) |
-| `instalator/` | `instaluj.ps1` (Windows) / `instaluj.sh` (macOS/Linux) — pusty katalog → działający vault z gitem i lintem RODO |
+| `instalator/` | `przygotuj-maszyne.ps1` / `.sh` — krok zero: Node.js, git, Obsidian, Claude Desktop (winget / Homebrew); `instaluj.ps1` / `.sh` — pusty katalog → działający vault z gitem i lintem RODO (z `-Remote` / `KONIK_REMOTE` wypycha do wspólnego repo zespołu); `dolacz.ps1` / `.sh` — kolejna osoba w firmie klonuje wspólne repo i dostaje hook RODO, tożsamość, MCP |
 | `narzedzia/` | `lint-rodo.js` — blokada danych osobowych w commitach vaulta |
 | `testy-regresji/` | Checklista 12 testów przed KAŻDĄ aktualizacją komponentów u klientów |
 | `docs/` | Dokumenty produktu: karta usługi, Kontrakt Danych, skrypt kwalifikacyjny, karty BUR, runbook |
