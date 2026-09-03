@@ -1,0 +1,12 @@
+# Konce linii: repo trzyma LF. Bez tego skrypty .sh commitowane z Windowsa
+# laduja na GitHubie z CRLF i na Macu klienta padaja na '#!/usr/bin/env bash\r'.
+# PowerShell 5.1 czyta LF poprawnie, wiec .ps1 tez LF - jeden standard.
+* text=auto eol=lf
+*.sh text eol=lf
+*.ps1 text eol=lf
+*.js text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
