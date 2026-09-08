@@ -55,17 +55,53 @@ pakiety=(
   "cask|Claude Desktop|claude"
 )
 
+# Pomijamy po TYM, CZY RZECZ DZIAŁA, a nie po tym, czy zainstalował ją brew.
+# macOS ma własnego gita (Xcode CLT), a Node i aplikacje bywają wstawione
+# instalatorem .pkg ze strony producenta. Pytanie „czy brew to zna" odpowiada
+# na złe pytanie i kończy się próbą instalacji czegoś, co już jest.
+juz_jest() {
+  case "$1" in
+    node) command -v node >/dev/null 2>&1 ;;
+    git)  command -v git  >/dev/null 2>&1 ;;
+    git-credential-manager) command -v git-credential-manager >/dev/null 2>&1 ;;
+    obsidian) [ -d "/Applications/Obsidian.app" ] ;;
+    claude)   [ -d "/Applications/Claude.app" ] ;;
+    *) return 1 ;;
+  esac
+}
+
+# Brak prawa zapisu do prefiksu Homebrew to NIE jest problem pojedynczego
+# pakietu — to samo padnie na każdym kolejnym. Sprawdzamy raz i mówimy, co
+# zrobić, zamiast wypisywać ten sam ekran błędu pięć razy pod rząd.
+BREW_PREFIX="$(brew --prefix 2>/dev/null || echo /opt/homebrew)"
+if [ ! -w "$BREW_PREFIX" ]; then
+  echo "!! Brak prawa zapisu do $BREW_PREFIX — Homebrew stawiał tu ktoś inny."
+  echo "   Konto $(whoami) nie może nic zainstalować. Do wyboru:"
+  echo
+  echo "   a) przejmij Homebrew na to konto (wymaga hasła administratora):"
+  echo "      sudo chown -R $(whoami) $BREW_PREFIX"
+  echo "      UWAGA: jeśli z Homebrew korzysta na tym Macu inne konto, przestanie działać u niego."
+  echo
+  echo "   b) zainstaluj ręcznie, bez Homebrew (bezpieczne na maszynie współdzielonej):"
+  echo "      Node LTS  → nodejs.org (pakiet .pkg)"
+  echo "      Obsidian  → obsidian.md"
+  echo "      Claude    → claude.ai/download"
+  echo "      git masz już z narzędzi Apple'a."
+  echo
+  echo "   Potem uruchom ten skrypt ponownie — sprawdzi, czego brakuje."
+  exit 1
+fi
+
 i=0
 for wpis in "${pakiety[@]}"; do
   i=$((i + 1))
   IFS='|' read -r rodzaj nazwa pakiet <<< "$wpis"
   etykieta="[$i/${#pakiety[@]}] $nazwa"
+  if juz_jest "$pakiet"; then echo "$etykieta — już jest, pomijam"; continue; fi
   if [ "$rodzaj" = "cask" ]; then
-    if brew list --cask "$pakiet" >/dev/null 2>&1; then echo "$etykieta — już jest, pomijam"; continue; fi
     echo "$etykieta — instaluję (cask $pakiet)"
     brew install --cask "$pakiet" || bledy+=("$nazwa")
   else
-    if brew list --formula "$pakiet" >/dev/null 2>&1; then echo "$etykieta — już jest, pomijam"; continue; fi
     echo "$etykieta — instaluję ($pakiet)"
     brew install "$pakiet" || bledy+=("$nazwa")
   fi
