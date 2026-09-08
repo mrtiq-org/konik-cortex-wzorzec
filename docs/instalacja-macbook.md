@@ -17,6 +17,22 @@ Na MacBooku klienta muszą być:
 | Obsidian | obsidian.md | uruchamia się |
 | Claude Desktop | claude.ai/download | klient jest **zalogowany na swoje konto** |
 
+### Jajko i kura na pustej maszynie
+
+Skrypt przygotowujący leży W TYM REPO, a na czystym Macu nie ma czym go
+pobrać — git przychodzi dopiero z narzędziami Apple'a. Kolejność jest więc
+odwrotna, niż się wydaje:
+
+1. **Homebrew** (jedna komenda ze strony brew.sh). Przy okazji dociąga
+   narzędzia wiersza poleceń Apple'a, czyli gita.
+2. **Klon repo** — dopiero teraz jest czym.
+3. **Skrypt przygotowujący** — gita i tak już zastanie, więc go pominie.
+
+Na maszynie klienta, gdzie nie chcesz zostawiać swojego dostępu do GitHuba:
+pobierz ZIP repo przez przeglądarkę (Code → Download ZIP), rozpakuj i pomiń
+punkt 2. Wtedy nie potrzebujesz nawet gita do samego pobrania — instalator
+założy go później dla vaulta.
+
 Cztery pierwsze pozycje stawia jeden skrypt (Homebrew na Macu, winget na
 Windowsie); zainstalowane pomija, na końcu wypisuje wersje do wpisania w portalu:
 
