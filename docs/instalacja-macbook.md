@@ -6,6 +6,33 @@ na konta klienta).
 
 ---
 
+## Najkrótsza droga — jedna linia
+
+Wszystko poniżej (kroki 0–2 i otwarcie vaulta) robi bootstrap. Na Macu
+klienta wklej w Terminal:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://dev.koniksystems.com/cortex/instaluj)"
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://dev.koniksystems.com/cortex/instaluj.ps1 | iex
+```
+
+Bez Homebrew, bez gita, bez logowania do GitHuba. Zapyta o nazwę firmy,
+kuratora, ID konta i token — i otworzy vault w Obsidianie. Zostają
+kroki 3–4a: logowanie klienta do Claude'a, limit wydatków, wdrożenie
+w panelu. Reszta tego dokumentu to ścieżka ręczna na wypadek, gdyby
+bootstrap się wywrócił, i opis tego, co robi pod spodem.
+
+Publikacja nowej wersji wzorca: `./narzedzia/publikuj.sh` → commit
+w KONIK CORE → PR → deploy. Plik `WERSJA` pod tym adresem mówi, który
+hash wzorca klient dostał.
+
+---
+
 ## 0. Zanim usiądziesz przy jego komputerze
 
 Na MacBooku klienta muszą być:
